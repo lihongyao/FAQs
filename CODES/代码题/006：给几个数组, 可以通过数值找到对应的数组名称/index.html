@@ -1,0 +1,57 @@
+<!--
+ * @Author: Lee
+ * @Date: 2023-07-11 11:50:42
+ * @LastEditors: Lee
+ * @LastEditTime: 2023-07-11 18:18:25
+ * @Description: 
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>006：给几个数组, 可以通过数值找到对应的数组名称</title>
+</head>
+
+<body>
+  <script>
+    // 比如这个函数输入一个1，那么要求函数返回A
+    const A = [1, 2, 3];
+    const B = [4, 5, 6];
+    const C = [7, 8, 9];
+
+    const map = {
+      1: 'A',
+      2: 'A',
+      3: 'A',
+      4: 'B',
+      5: 'B',
+      6: 'B',
+      7: 'C',
+      8: 'C',
+      9: 'C',
+    };
+
+    function test(num) {
+      if (map.hasOwnProperty(num)) {
+        return map[num];
+      } else {
+        return 'Invalid input';
+      }
+    }
+
+    console.log(test(1)); // 输出 'A'
+
+    a = 3;
+    {
+      a = 2;
+      function a() { }
+      a = 1;
+    }
+    console.log(a);
+
+  </script>
+</body>
+
+</html>

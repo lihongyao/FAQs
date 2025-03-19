@@ -1,0 +1,75 @@
+<!--
+ * @Author: Lee
+ * @Date: 2023-07-15 21:46:27
+ * @LastEditors: Lee
+ * @LastEditTime: 2023-07-16 15:10:39
+ * @Description: 
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>010：数组去重</title>
+</head>
+
+<body>
+  <script>
+    const arr = [1, 1, '1', 17, true, true, false, false, 'true', 'a', {}, {}];
+
+    // 1. Set
+    console.log([...new Set(arr)]);
+
+    // 2. 两层for循环+splice
+    const unique1 = arr => {
+      let len = arr.length;
+      for (let i = 0; i < len; i++) {
+        for (let j = i + 1; j < len; j++) {
+          if (arr[i] === arr[j]) {
+            arr.splice(j, 1);
+            // 每删除一个值，j--保证j的值经过自加后不变。同时，len--，减少循环次数提升性能
+            len--;
+            j--;
+          }
+        }
+      }
+      return arr;
+    }
+
+    // 3. indexOf / includes 
+    const unique2 = (arr) => {
+      let result = [];
+      arr.forEach(item => {
+        if (!result.includes(item)) {
+          result.push(item);
+        }
+      });
+      return result;
+    }
+
+    // 4. filter
+    const unique3 = (arr) => {
+      return arr.filter((item, index) => {
+        return arr.indexOf(item) === index;
+      })
+    }
+
+    // 5. map
+    const unique4 = (arr) => {
+      const map = new Map();
+      const result = [];
+      for (let i = 0; i < arr.length; i++) {
+        if (!map.has(arr[i])) {
+          result.push(arr[i]);
+          map.set(arr[i], true)
+        }
+      }
+      return result;
+    }
+    console.log(unique3(arr))
+
+  </script>
+</body>
+
+</html>

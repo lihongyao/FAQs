@@ -1,0 +1,38 @@
+<!--
+ * @Author: Lee
+ * @Date: 2023-07-11 10:48:02
+ * @LastEditors: Lee
+ * @LastEditTime: 2023-07-11 10:50:12
+ * @Description: 
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>001:实现节流函数</title>
+</head>
+
+<body>
+
+
+  <script>
+    function throttle(callback, delay = 500) {
+      let timeoutId = null;
+      return function (...args) {
+        if (timeoutId) return;
+        timeoutId = setTimeout(() => {
+          callback.apply(this, args);
+          timeoutId = null;
+        }, delay);
+      }
+    }
+
+    window.onresize = throttle(() => {
+      console.log("触发");
+    });
+  </script>
+</body>
+
+</html>

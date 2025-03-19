@@ -1,0 +1,53 @@
+<!--
+ * @Author: Lee
+ * @Date: 2023-07-13 10:23:03
+ * @LastEditors: Lee
+ * @LastEditTime: 2023-07-13 10:29:24
+ * @Description: 
+-->
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手写instanceof</title>
+</head>
+
+<body>
+
+
+  <script>
+
+    function myInstanceOf(obj, constructor) {
+      // 验证参数有效性
+      if (typeof obj !== 'object' || obj === null) {
+        return false;
+      }
+
+      let proto = Object.getPrototypeOf(obj);
+
+      while (proto !== null) {
+        if (proto === constructor.prototype) {
+          return true;
+        }
+        // 如果没有找到，就继续从其原型上找，
+        proto = Object.getPrototypeOf(proto);
+      }
+      return false;
+    }
+
+    function Person() { }
+
+    const person = new Person();
+
+    console.log(myInstanceOf(person, Person)); // true
+    console.log(myInstanceOf(person, Object)); // true
+    console.log(myInstanceOf(person, Array));  // false
+
+  </script>
+</body>
+
+</html>

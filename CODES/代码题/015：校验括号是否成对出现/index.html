@@ -1,0 +1,90 @@
+<!--
+ * @Author: Lee
+ * @Date: 2023-07-25 21:07:44
+ * @LastEditors: Lee
+ * @LastEditTime: 2023-07-25 21:53:57
+ * @Description: 
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>015：校验括号是否成对出现</title>
+</head>
+
+<body>
+  <script>
+    // 1. 方法1：利用栈结构，遇到“(”时入栈，遇到“)”时出栈
+    function match1(str) {
+      const stack = [];
+      const len = str.length;
+      for (let i = 0; i < len; i++) {
+        const char = str[i];
+        if (char === "(") {
+          stack.push(char);
+        } else if (char === ')') {
+          if (stack.length === 0) {
+            return false;
+          }
+          stack.pop();
+        }
+      }
+      return stack.length === 0;
+    }
+
+    // 2. 方法2：reduce，思路类似
+    function match2(str) {
+      const flag = str.replace(/[^()]/g, '').split("").reduce((flag, item) => {
+        return item === "(" ? flag + 1 : flag - 1;
+      }, 0);
+      return flag === 0;
+    }
+
+
+    console.log(match2("(1)")) // true 
+    console.log(match2("(")) // false
+    console.log(match2("(()())()")) // true
+
+
+    function areAllBracketsPaired(str) {
+      const stack = [];
+      const bracketPairs = {
+        '(': ')',
+        '{': '}',
+        '[': ']',
+      };
+      for (let i = 0; i < str.length; i++) {
+        const char = str[i];
+
+        // 如果是左括号，将其推入栈中
+        if (char === '(' || char === '{' || char === '[') {
+          stack.push(char);
+        } else if (char === ')' || char === '}' || char === ']') {
+          // 如果是右括号
+          if (stack.length === 0) {
+            // 如果栈为空，说明没有与之对应的左括号，直接返回false
+            return false;
+          }
+          const lastBracket = stack.pop();
+          // 检查栈顶的左括号是否与当前的右括号匹配
+
+          if (bracketPairs[lastBracket] !== char) {
+            return false;
+          }
+        }
+      }
+
+      return stack.length === 0; // 栈为空时才说明所有括号都成对
+    }
+
+    console.log(areAllBracketsPaired("")); // true
+    console.log(areAllBracketsPaired("(){}[]")); // true
+    console.log(areAllBracketsPaired("({[]})")); // true
+    console.log(areAllBracketsPaired("({[})")); // false
+    console.log(areAllBracketsPaired("([)]")); // false
+  </script>
+</body>
+
+</html>

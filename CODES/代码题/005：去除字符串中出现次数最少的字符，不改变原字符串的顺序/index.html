@@ -1,0 +1,45 @@
+<!--
+ * @Author: Lee
+ * @Date: 2023-07-11 10:57:53
+ * @LastEditors: Lee
+ * @LastEditTime: 2023-07-11 11:50:39
+ * @Description: 
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>005：去除字符串中出现次数最少的字符，不改变原字符串的顺序</title>
+</head>
+
+<body>
+  <script>
+    function removeLeastFrequentChars(str) {
+      // 1. 计算字符串频率
+      const map = {};
+      for (let char of str) {
+        map[char] = (map[char] || 0) + 1;
+      }
+
+      // 2. 查找最小值
+      const leastVal = Math.min(...Object.values(map));
+      // 3. 拼接结果
+      let result = '';
+      for (let char of str) {
+        if (map[char] !== leastVal) {
+          result += char;
+        }
+      }
+      return result;
+    }
+
+    console.log(removeLeastFrequentChars("ababac")); // ababa
+    console.log(removeLeastFrequentChars("aaabbbcceeff")); // aaabbb
+
+
+  </script>
+</body>
+
+</html>

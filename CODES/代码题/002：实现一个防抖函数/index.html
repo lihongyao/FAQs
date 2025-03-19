@@ -1,0 +1,34 @@
+<!--
+ * @Author: Lee
+ * @Date: 2023-07-11 10:52:00
+ * @LastEditors: Lee
+ * @LastEditTime: 2023-07-11 10:54:29
+ * @Description: 
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>002：实现一个防抖函数</title>
+</head>
+
+<body>
+
+  <script>
+    function debounce(callback, delay = 500) {
+      let timeoutId = null;
+      return function (...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          callback.apply(this, args);
+        }, delay);
+      }
+    }
+
+
+  </script>
+</body>
+
+</html>
