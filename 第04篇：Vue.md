@@ -243,7 +243,7 @@ Vue 的响应式原理分为三步：**数据劫持、依赖收集、派发更�
 
    - Vue2：选项式API
    - Vue3：选项式API / 组合式API
-2. 检测机制的变化
+2. 监听机制的变化
    - Vue2 基于`Object.defineProperty` 实现数据劫持
    - Vue3 基于 `Proxy`，检测整个对象
 3. Diff算法优化（*参考020：Diff算法*）
@@ -265,91 +265,98 @@ Vue 的响应式原理分为三步：**数据劫持、依赖收集、派发更�
 
 ### 025：defineProperty 和 Proxy的区别？✔️
 
-Vue 在实例初始化时遍历 data 中的所有属性，并使用 Object.defineProperty 把这些属性全部转为 getter/setter。并劫持各个属性 getter 和 setter，在数据变化时发布消息给订阅者，触发相应的监听回调，而这之间存在几个问题。
+Vue 在实例初始化时遍历 data 中的所有属性，并使用 Object.defineProperty 把这些属性全部转为 getter/setter，同时劫持各个属性 getter 和 setter，在数据变化时发布消息给订阅者，触发相应的监听回调，而这之间存在几个问题。
 
-1.  初始化时需要遍历对象所有 key，如果对象层次较深，性能不好
-
-2. 通知更新过程需要维护大量 dep 实例和 watcher 实例，额外占用内存较多
-3. Object.defineProperty 无法监听到数组元素的变化，只能通过劫持重写数组方法
-4. 动态新增，删除对象属性无法拦截，只能用特定 set/delete API 代替
-5. 不支持 Map、Set 等数据结构
+1.  需要遍历对象所有属性，深层次对象性能较差。
+2.  无法监听数组元素变化，需通过 **重写数组方法** 实现。
+3.  动态新增/删除属性无法拦截，需使用特定 API（如 `Vue.set`/`Vue.delete`）。
+4.  不支持 `Map`、`Set` 等数据结构。
+5.  维护大量 `Dep` 和 `Watcher` 实例，内存占用较高。
 
 Vue3 使用 Proxy 来监控数据的变化，监测的是整个对象，而不再是某个属性：
 
-1. 消除了  Object.defineProperty 存在的很多限制。
-2. 可以监测到对象属性的添加和删除，可以监听数组的变化
-3. 它的处理方式是在 getter 中去递归响应式，这样的好处是真正访问到的内部属性才会变成响应式，简单的可以说是**按需实现响应式，减少性能消耗**。
-4. Proxy 可以监听数组的变化。
-6. 支持Map、Set结构
+1. 监测整个对象，无需遍历所有属性，性能更好。
+2. 支持监听数组变化和动态属性增删。
+3. **按需实现响应式**，真正访问到的属性才会变为响应式，减少性能消耗。
+4. 支持 `Map`、`Set` 等数据结构。
+5. 语法更简洁，功能更强大。
+
+`Proxy` 解决了 `Object.defineProperty` 的诸多限制，性能更优，功能更全面，是 Vue3 响应式系统的核心。
 
 ### 026：Vue3 Diff算法和 Vue2 的区别？✔️
 
-我们知道在数据变更触发页面重新渲染，会生成虚拟 DOM 并进行 patch 过程，这一过程在 Vue3 中的优化有如下
-
 1. 编译阶段的优化
-   - 事件缓存：将事件缓存(如: @click)，可以理解为变成静态的了
-   - 静态提升：第一次创建静态节点时保存，后续直接复用
-   - 添加静态标记：给节点添加静态标记，以优化 Diff 过程
-     由于编译阶段的优化，除了能更快的生成虚拟 DOM 以外，还使得 Diff 时可以跳过"永远不会变化的节点"，
+   - **事件缓存**：将事件（如 `@click`）缓存为静态节点。
+   
+   - **静态提升**：首次创建静态节点后直接复用，避免重复创建。
+   
+   - **静态标记**：为节点添加静态标记，优化 Diff 过程，跳过不变节点。
+   
 2. Diff 算法的优化
-   - Vue2 是全量 Diff，Vue3 是静态标记 + 非全量 Diff
-   - 使用最长递增子序列优化了对比流程
+   - **Vue2**：全量 Diff，遍历所有节点进行对比。
+   - **Vue3**：**静态标记 + 非全量 Diff**，仅对比动态节点，跳过静态节点。
+   - **最长递增子序列**：优化对比流程，减少不必要的 DOM 操作。
+
+Vue3 通过编译阶段优化和 Diff 算法改进，显著提升了性能，减少了 DOM 操作的开销。
 
 ### 027：Vuex vs Pinia ✔️
 
 Pinia和Vuex都是Vue状态管理库，但是它们有一些区别：
 
 1. API风格
-   - Vuex 是 Vue.js 官方提供的状态管理库，它在 Vue 2 中被广泛使用。它使用基于选项的 API 设计，通过定义 `state`、`mutations`、`actions` 等选项来管理状态和处理业务逻辑。
-   - Pinia 是一个由 Vue 社区维护的状态管理库，专门为 Vue 3 设计。它采用了基于类的 API 设计，通过定义 `state`、`getters`、`actions` 等类成员来管理状态和处理业务逻辑。
+   - Vuex：基于选项式 API，通过 `state`、`mutations`、`actions` 等选项管理状态。
+   - Pinia：基于组合式 API，通过 `state`、`getters`、`actions` 等类成员管理状态，更简洁灵活。
 2. 响应式系统
-   - Vuex 使用 Vue 2 的响应式系统来管理状态，它基于 Object.defineProperty() 来监听状态的变化，并在状态变化时触发视图更新。
-   - Pinia 使用 Vue 3 的基于 Proxy 的响应式系统来管理状态，使用 Proxy 对象监听状态变化，并在状态变化时触发更新。这种基于 Proxy 的响应式系统在性能上优于 Vue 2 中的 Object.defineProperty()。
+   - Vuex：使用 Vue 2 的 `Object.defineProperty` 监听状态变化。
+   - Pinia：使用 Vue 3 的 `Proxy` 监听状态变化，性能更优。
 3. TypeScript 支持
-   - Vuex 对 TypeScript 有一定的支持，提供了一些类型定义和接口声明，使得在 TypeScript 项目中使用时更加方便。
-   - Pinia 在设计上更加友好于 TypeScript，并提供了更好的类型推断和类型检查支持，使得在 TypeScript 项目中的开发更加高效和安全。
+   - Vuex：提供基础的类型支持，但不够完善。
+   - Pinia：对 TypeScript 友好，提供更好的类型推断和检查，开发更高效。
+4. 设计理念
+   - Vuex：Vue 2 官方状态管理库，适合复杂项目。
+   - Pinia：为 Vue 3 设计，轻量且现代化，适合中小型项目。
+
+Pinia 是 Vuex 的现代化替代品，API 更简洁，性能更优，对 TypeScript 支持更好，适合 Vue 3 项目。
 
 ### 028：Vue vs. React ✔️
 
 1. 核心思想不同
-   - Vue的核心思想是尽可能的降低前端开发的门槛，是一个**灵活易用的渐进式双向绑定的MVVM框架**。
-   - React的核心思想是**声明式渲染和组件化、单向数据流**，React既不属于MVC也不属于MVVM架构。
+   - Vue：**渐进式 MVVM 框架**，开发门槛比较低，支持双向绑定。
+   - React：**声明式渲染 + 组件化**，强调单向数据流。
 
 2. 本质不同
-   - Vue本质是**MVVM框架**，由MVC发展而来。
-   - React是**前端组件化框架**，由后端组件化发展而来。
+   - Vue：基于 **MVVM** 架构。
+   - React：**前端组件化框架**。
 
 3. 响应式原理不同
-   - Vue通过数据劫持+发布订阅者模式来实现
-   - React主要通过 **setState** 来更新状态，从而触发组件的更新。
+   - Vue：**数据劫持 + 发布订阅模式**。
+   - React：通过 **setState** 更新状态，触发组件更新。
 
 4. 监听数据变化的实现原理不同
-   - Vue通过劫持属性setter/getter，能精确知道数据的变化
-   - React 是通过 **比较引用的方式** 进行的。
+   - Vue：劫持属性 `setter/getter`，精确监听变化。
+   - React：通过 **引用比较** 判断变化。
 
 5. Diff算法不同
 
-   Vue和React的Diff算法都是进行同层次的比较，主要有以下两点不同：
+   Vue和React的Diff算法都是进行 **同层次** 的比较，主要有以下两点不同：
 
-   - 对比结点时，如果节点元素类型相同，但是className不同，Vue 认为是不同类型的元素，会进行删除重建，但是React则会认为是同类型的节点，只会修改节点属性。
+   - 对比结点时，如果节点元素类型相同，但是 className 不同，Vue 认为是不同类型的元素，会进行删除重建，但是React则会认为是同类型的节点，只会修改节点属性。
 
-   - 列表渲染时，Vue采用的是首尾指针法，而React采用的是从左到右依次比对的方式。从这点上来说vue的对比方式更加高效。
+   - 列表渲染时，Vue采用的是首尾指针法，而React采用的是从左到右依次比对的方式。从这点上来说 vue 的对比方式更加高效。
 
 6. 组件写法不同
-   - Vue 通过 `<template>` 单文件组件的形式，后缀名为：`.vue`
-   - React 提倡使用 `jsx` + `inline style`，后缀名为：`.j(t)sx`
+   - Vue：单文件组件（`.vue`），使用 `<template>`。
+   - React：`JSX` + `inline style`，文件后缀 `.jsx`/`.tsx`。
 
 7. 组合不同功能的方式不同
-   - Vue使用 minxin
-   - React使用 HoC（高阶组件）
+   - Vue：使用 `mixin`
+   - React：使用 **高阶组件（HoC）**。
 
 8. 组件通信方式不同
-   - Vue：`props` + `emit`、`provide` + `inject`、Vuex
+   - Vue：`props` + `emit`、`provide` + `inject`、`Vuex`、`Pinia`
    - React：`props` + `callback`、`context`、`Redux`
 
 9. 渲染过程不同
-   - Vue可以更快的计算出虚拟DOM的差异（*这是由于它在渲染过程中，会跟踪每一个组件的依赖关系，**不需要重新渲染整个组件树***）
-   - React在应用的状态被改变时，**全部子组件都会重新渲染**。通过shouldComponentUpdate 这个生命周期方法可以进行控制，但Vue将此视为默认的优化。
-
-https://worktile.com/kb/ask/19606.html
+   - Vue：**更快的虚拟 DOM 差异计算**（这是由于它在渲染过程中，会跟踪每一个组件的依赖关系，**不需要重新渲染整个组件树**）
+   - React：状态改变时，**所有子组件重新渲染**，需手动优化。通过shouldComponentUpdate 这个生命周期方法可以进行控制，但Vue将此视为默认的优化。
 
