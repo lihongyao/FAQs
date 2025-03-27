@@ -1,19 +1,21 @@
 ### 001：简述什么是BFC？✔️
 
-1. 基本概念：**B**lock **F**ormatting **C**ontext，块级格式化上下文，是一块独立的渲染区域，内部元素不会影响外部的元素； 
+1. 基本概念：**B**lock **F**ormatting **C**ontext，块级格式化上下文，是 一块独立渲染区域，内部元素的布局不会影响外部元素。
 
 2. 解决什么问题？
 
-   - 清除浮动；
-   - 避免margin重叠；
-   - 创建独立的布局上下文；
+   - **清除浮动**（防止父元素高度塌陷）
+   - **避免 margin 重叠**（相邻元素的 margin 不会合并）
+   - **隔离布局**（内部元素不影响外部布局）
 
 3. 满足以下条件，就可以创建BFC
 
-   - 浮动元素：`!none`
-   - 绝对定位元素：`absolute/fixed`
-   - display：`inline-block/table-cell/flex/grid` 
-   - overflow：`!visible `
+   - `float: left/right`（非 `none`）
+   - `position: absolute/fixed`
+   - `display: inline-block / table-cell / flex / grid`
+   - `overflow: hidden / auto / scroll`（非 `visible`）
+
+BFC 是一个独立布局空间，能解决浮动、margin 重叠等问题，通过 `float`、`position`、`overflow` 等属性触发。
 
 ### 002：px/em/rem ✔️
 

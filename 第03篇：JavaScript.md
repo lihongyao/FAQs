@@ -116,6 +116,50 @@
 
 [参考这里 >>](https://gitee.com/lihongyao/JavaScript/blob/master/%E7%AC%AC16%E7%AB%A0%20%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF.md)
 
+**核心概念**
+
+JavaScript 是单线程语言，**事件循环**是其实现异步非阻塞的关键机制，通过 **任务队列** 和 **循环调度** 处理任务。
+
+**运行流程**
+
+1. **调用栈（Call Stack）**
+   - 同步代码按顺序执行，形成调用栈（如函数调用）。
+   - 遇到异步任务（如 `setTimeout`、`Promise`）时，交给 **Web APIs** 处理。
+2. **任务队列（Task Queues）**
+   - 宏任务队列（MacroTask Queue）：
+     - 包含 `setTimeout`、`setInterval`、DOM 事件、`I/O` 操作等。
+   - 微任务队列（MicroTask Queue）：
+     - 包含 `Promise.then`、`MutationObserver`、`queueMicrotask`。
+3. **事件循环调度**
+   - **步骤 1**：**执行同步代码**（调用栈清空）
+   - **步骤 2**：清空 **微任务队列**（优先级高，全部执行）。
+   - **步骤 3**：**执行一个宏任务**（只取一个，不是清空整个宏任务队列）
+   - **重复**：**重复循环**（回到步骤2，继续清空微任务→执行下一个宏任务）
+
+**示例验证**
+
+```js
+console.log(1);
+
+setTimeout(() => {
+  console.log(2);
+  Promise.resolve().then(() => console.log(3));
+}, 0);
+
+setTimeout(() => console.log(4), 0);
+
+Promise.resolve().then(() => console.log(5));
+```
+
+输出顺序：`1 → 5 → 2 → 3 → 4`
+
+执行过程：
+
+1. 同步代码：`1`
+2. 清空微任务：`5`
+3. 执行第一个宏任务（`setTimeout 2`），输出`2` → 其回调中产生微任务`3` → **立即清空微任务**，输出`3`
+4. 执行下一个宏任务（`setTimeout 4`），输出`4`
+
 ### 015：给出代码的输出顺序
 
 ```js
@@ -209,9 +253,9 @@ var b = 10;
 ### 019：箭头函数和普通函数有什么区别？✔️
 
 1. 箭头函数用 `=>` 定义，普通函数用 `function` 定义。
-2. 箭头函数语法更简洁（可省略花括号和 `return`）。
-3. 箭头函数都是匿名函数，普通函数可以是匿名或具名函数。
-4. 箭头函数没有自己的 `this`，从作用域链上一层继承，普通函数的 `this` 指向调用者。
+2. 箭头函数语法更简洁（可省略括号和 `return`）。
+3. 箭头函数只能是匿名函数，普通函数可以是匿名或具名函数。
+4. 箭头函数没有自己的 `this`，从作用域链上一层继承，普通函数的 `this` 可以动态绑定，并且有调用者决定指向。
 5. 箭头函数使用剩余参数（`...args`），普通函数使用 `arguments`。
 6. 箭头函数不能作为构造函数（不能使用 `new`）。
 7. 箭头函数没有 `prototype` 和 `super`。
@@ -220,7 +264,10 @@ var b = 10;
 >
 > Q：为什么箭头函数不能作为构造函数？
 >
-> A：因为箭头函数没有自己的 `this` 绑定。
+> A：
+>
+> 1. 箭头函数没有自己的 `this` 绑定（继承自外层），无法动态绑定到实例。
+> 2. 无 `prototype` 属性，无法挂载原型方法。
 
 ### 020：JavaScript 和 TypeScript的区别？✔️
 
@@ -458,5 +505,12 @@ xhr.onload = function () {
 2. **错误处理**：使用 `try/catch` 统一处理同步和异步错误。
 3. **逻辑清晰**：以同步的方式表达异步逻辑，更易理解和维护。
 
+### 037：localStorage vs. cookie vs. sessionStorage ✔️
 
+- 存储大小：Cookie 4k；Storage 5M；
+- 有效期：Cookie 拥有有效期；localStorage 永久存储；sessionStorage 会话存储
+- Cookie 会发送到服务器端，存储在内存中；Storage 只会存储在浏览器端
+- 路径：Cookie 有路径限制，Storage 只存储在域名下
+- API：Cookie 没有特定的 API；Storage 有对应的 API；
+- 跨域
 
