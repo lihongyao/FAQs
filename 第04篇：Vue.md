@@ -219,7 +219,7 @@ Vue 的响应式原理分为三步：**数据劫持、依赖收集、派发更�
 
    数据更新时，会触发 Data 的 set 方法，然后调用 Dep.notify 通知所有使用到该 Data 的 Watcher 去更新 DOM。
 
-### 022：data 为什么是函数？
+### 022：data 为什么是函数？～～～
 
 避免数据污染
 
@@ -237,26 +237,18 @@ Vue 的响应式原理分为三步：**数据劫持、依赖收集、派发更�
 1. 监听机制的变化
    - Vue2 基于`Object.defineProperty` 实现数据劫持，通过深度遍历所有属性，给每个属性添加getter和setter，实现响应式。
    - Vue3 基于 `Proxy` 实现数据截止，不用深度遍历所有属性。
-
 2. API模式不同
    - Vue2：选项式API
    - Vue3：新增组合 API（Composition API），更好的逻辑重用和代码组织
 3. `v-if` 和 `v-for` 的优先级
 4. 支持多个根节点（`template`中不需要唯一根节点，可以直接放文本或者同级标签）
 5. 打包体积优化
-
-3. Diff算法优化（*参考020：Diff算法*）
-
-4. 建立数据的方式不同
-   - Vue2：在data属性中定义数据
-   - Vue3：在 `setup()` 函数中定义数据
-
+6. Diff算法优化（*参考020：Diff算法*）
 5. 生命周期钩子不同
    - Vue3的钩子函数在Vue2的基础上加了on，如：created → onCreated
    - beforeDestory 和 destoryed 更名为 onBeforeUnmount 和 onUnmounted
    - 用setup代替beforeCreate和created。
-
-6. 父子传参不同：definProps
+8. 父子传参不同：definProps
 7. Vue3引入了新的优化方式——静态提升，通过在编译阶段处理静态节点，减少运行时的开销
 
 总结：**Vue3 性能更高、体积更小、更利于复用、代码维护更方便**
@@ -386,3 +378,24 @@ Vue 使用虚拟 DOM 来优化渲染性能。当列表数据发生变化时，Vu
 - VM： 视图模型
 
 在 MVVM 中，View 不知道 Model 的存在，Model 和 ViewModel 也观察不到 View，这种低耦合模式提高代码的可重用性。VM 会自动将数据更新到页面中，而 MVC 需要手动操作 dom 将数据进行更新
+
+### 033：首屏优化 ✔️
+
+参考阅读：https://juejin.cn/post/7482265923919822875
+
+1. 路由懒加载
+2. 组件级动态导入
+3. CDN加速静态资源
+4. 骨架屏
+
+### 034：父子组件生命周期加载时的执行顺序
+
+父beforeCreate → 父created → 父beforeMount
+
+子beforeCreate → 子created → 子beforeMount  → 子mounted → 父mounted
+
+延伸问题1：为什么先走子mounted在走父mounted？
+
+比如 b.vue → a.vue → app.vue，父组件在挂载时必须确保子组件挂载之后才能挂在到根视图上，否则视图会有缺失，就好像递归查询或者双重循环，只有当内层循环结束之后外层循环才算结束1次。
+
+延伸问题2：`this.$nextTick()` 的本质其实就是在监听生命周期的变化
