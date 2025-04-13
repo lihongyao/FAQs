@@ -193,7 +193,7 @@ px、rem、em 都是表示长度或字体大小的单位，主要区别在于 **
 ### 015：CSS 优化和提高性能的方法有哪些？✔️
 
 1. 合并压缩 CSS 文件，减少 HTTP 请求
-2. 使用属性简写（如 margin: 10px 0 代替分写属性）
+2. 使用属性简写-组合值（如 margin: 10px 0 代替分写属性）
 3. 简化选择器，避免深层嵌套（如 .nav-link 代替 div#header ul.nav li a）
 4. 减少冗余代码，利用 CSS 继承机制（如 font-family 继承）
 5. 避免频繁重绘和回流，用 transform 和 opacity 做动画
