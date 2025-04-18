@@ -1,4 +1,4 @@
-### 001：简述什么是BFC？✔️
+### 001：什么是 BFC？如何触发 BFC？✔️
 
 1. 基本概念：**B**lock **F**ormatting **C**ontext，块级格式化上下文，是 一块独立渲染区域，内部元素的布局不会影响外部元素。
 
@@ -123,36 +123,25 @@ px、rem、em 都是表示长度或字体大小的单位，主要区别在于 **
 4. line-height 和 height 保持一致（里面的元素必须是inline，否则不生效）；
 5. 通过padding：（已知子元素宽高情况，但不推荐）； 
 
-### 011：CSS选择器及其优先级
+### 011：常见的 CSS 选择器有哪些？
 
-| 选择器         | 格式                   | 优先级权重 |
-| -------------- | ---------------------- | ---------- |
-| `id` 选择器    | `#id`                  | 100        |
-| 类选择器       | `#classname`           | 10         |
-| 属性选择器     | `input[type='button']` | 10         |
-| 伪类选择器     | `li:last-child`        | 10         |
-| 标签选择器     | `div`                  | 1          |
-| 伪元素选择器   | `li:after`             | 1          |
-| 相邻兄弟选择器 | `h1 + p`               | 0          |
-| 子选择器       | `ul > li`              | 0          |
-| 后代选择器     | `li a`                 | 0          |
-| 通配符选择器   | `*`                    | 0          |
-
-对于选择器的 **优先级**：
-
-- 标签选择器、伪元素选择器：`1`
-
-- 类选择器、伪类选择器、属性选择器：`10`
-- `id` 选择器：`100`
-- 内联样式：`1000`
-
-**注意事项：**
-
-- `!important` 声明的样式的优先级最高；
-- 如果优先级相同，则最后出现的样式生效；
-- 继承得到的样式的优先级最低；
-- 通用选择器（`*`）、子选择器（`>`）和相邻同胞选择器（`+`）并不在这四个等级中，所以它们的权值都为 `0` ；
-- 样式表的来源不同时，优先级顺序为：内联样式 > 内部样式 > 外部样式 > 浏览器用户自定义样式 > 浏览器默认样式。
+| 选择器类型          | 示例                               | 说明                                       |
+| :------------------ | :--------------------------------- | :----------------------------------------- |
+| **元素选择器**      | `p`                                | 选择所有 `<p>` 元素                        |
+| **类选择器**        | `.button`                          | 选择所有 `class="button"` 的元素           |
+| **ID 选择器**       | `#header`                          | 选择 `id="header"` 的元素                  |
+| **通用选择器**      | `*`                                | 选择页面中的所有元素                       |
+| **后代选择器**      | `div p`                            | 选择 `div` 内的所有 `<p>` 元素             |
+| **子元素选择器**    | `div > p`                          | 选择 `div` 的直接子元素 `<p>`              |
+| **相邻兄弟选择器**  | `h1 + p`                           | 选择紧接在 `<h1>` 后面的 `<p>` 元素        |
+| **通用兄弟选择器**  | `h1 ~ p`                           | 选择所有紧跟在 `<h1>` 后面的 `<p>` 元素    |
+| **属性选择器**      | `a[href]`                          | 选择具有 `href` 属性的所有 `<a>` 元素      |
+| **`:hover`**        | `a:hover`                          | 选择鼠标悬停时的 `<a>` 元素                |
+| **`:first-child`**  | `p:first-child`                    | 选择父元素中的第一个 `<p>` 元素            |
+| **`:nth-child(n)`** | `li:nth-child(odd)`                | 选择父元素中所有奇数位置的 `<li>` 元素     |
+| **`::before`**      | `p::before { content: "Note: "; }` | 在每个 `<p>` 元素的前面插入 "Note: "       |
+| **`::after`**       | `p::after { content: "."; }`       | 在每个 `<p>` 元素的后面插入一个句点        |
+| **`:not()`**        | `p:not(.highlight)`                | 选择所有不具有 `highlight` 类的 `<p>` 元素 |
 
 ### 012：CSS 中可继承与不可继承属性有哪些？
 
@@ -217,39 +206,34 @@ px、rem、em 都是表示长度或字体大小的单位，主要区别在于 **
 - `imgs.offsetTop` 是元素顶部距离文档顶部的高度（包括滚动条的距离）；
 - 内容达到显示区域的：`img.offsetTop < window.innerHeight + document.body.scrollTop;`
 
-### 017：如何解决 1px 问题？
+### 017：如何实现 Retina 屏 1px 像素边框？✔️
 
-1px问题是指在高像素密度（Retina）屏幕上显示的1像素边框或线条看起来过粗的问题。这是由于高像素密度屏幕的物理像素与CSS像素之间的差异导致的。
-
-以下是一些常见的解决1px问题的方法：
-
-1. **使用缩放：** 可以使用`transform: scale()`将元素进行缩放，使其显示为0.5px或0.3333px等细小像素。例如：
+1. 使用 `transform: scale` 实现
 
    ```css
-   .element {
-     transform: scale(0.5);
+   .retina-border {
+     position: relative;
    }
-   ```
-
-2. **使用伪元素和transform：** 可以使用伪元素和`transform: scaleY()`来创建细小的边框或线条。例如：
-
-   ```css
-   .element::before {
+   
+   .retina-border::after {
      content: '';
-     display: block;
-     height: 1px;
-     background-color: #000;
-     transform: scaleY(0.5);
+     position: absolute;
+     left: 0;
+     right: 0;
+     bottom: 0;
+     height: 1px; /* 边框的物理宽度 */
+     background-color: black; /* 边框颜色 */
+     transform: scaleY(0.5); /* 缩放到 0.5 */
+     transform-origin: 0 0; /* 缩放起点 */
    }
    ```
 
-3. **使用border-image：** 可以使用CSS的`border-image`属性来创建细小的边框。通过定义一个1像素的图片作为边框图像，并使用`slice`和`repeat`属性来控制边框的展示方式。例如：
+2. 使用 `box-shadow` 模拟边框
 
    ```css
-   .element {
-     border-width: 1px;
-     border-style: solid;
-     border-image: url(border-image.png) 1 1 stretch;
+   .retina-border {
+     position: relative;
+     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5); /* 通过阴影模拟边框 */
    }
    ```
 
@@ -309,7 +293,36 @@ px、rem、em 都是表示长度或字体大小的单位，主要区别在于 **
 
 CSS 动画性能更好，适合简单效果；JS 动画控制灵活，适合复杂交互。优化时优先用 CSS `transform/opacity` 触发 GPU 加速，复杂场景用 `requestAnimationFrame` 或 GSAP。
 
+### 023：CSS 盒子模型，尺寸计算
 
+如下代码，请问 `div1` 的 `offsetWidth` 是多大？
 
+```html
+<!-- 如下代码，请问 div1 的 offsetWidth 是多大？ -->
+<style>
+  #div1 {
+    width: 100px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 10px;
+  }
+</style>
 
+<div id="div1"></div>
+```
+
+答案：`offsetWidth` 是指 `元素内容 + 内间距 + 边框`的距离，不包括外间距，所以 `offsetWidth` 是 `122px
+
+追问：如果想要让 `offsetWidth` 等于 `100px` ，还需要再增加一个什么属性？
+
+答案：增加 `box-sizing: border-box;`
+
+### 024：如何理解 `z-index` ？✔️
+
+1. 用于控制元素的**堆叠顺序**（Z轴显示顺序），值越大越靠前
+2. 只适用于**定位**的元素，需要设置 `position` 属性为 `relative`、`absolute`、`fixed` 或 `sticky`，否则 `z-index` 不生效
+3. 比较规则：
+   - **同级元素**：直接比较 `z-index` 值，大的覆盖小的
+   - **父子元素**：子元素的 `z-index` 仅在父元素内有效，父元素的 `z-index` 决定整体层级
+4. 默认值为 `auto`，支持负数（显示在背景下方）。
 
