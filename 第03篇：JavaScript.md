@@ -245,10 +245,23 @@ var b = 10;
 4. ES Modules：默认行为类似 `defer`，支持模块化
 5. requestIdleCallback 或 IntersectionObserver：在浏览器空闲或元素进入视口时加载脚本，优化性能
 
-### 018：null和undefined的区别？✔️
+### 018：null vs. undefined？
 
-- null：空值
-- undefined：未定义
+- `undefined`：
+  - **含义**：表示“未定义”或“缺失值”。
+  - 触发场景
+    - 变量声明但未赋值（如 `let x;`）。
+    - 访问对象不存在的属性（如 `obj.key`）。
+    - 函数未传递参数或未返回值（如 `function f() {}`）。
+  - **类型**：`typeof undefined` 返回 `undefined`
+
+- `null`
+  - **含义**：表示“有意的空值”或“空对象指针”。
+  - **触发场景**：
+    - 开发者主动赋值为空（如 `let x = null;`）。
+    - 作为函数返回值表示无结果（如 `return null;`）。
+    - 对象原型链终点（如 `Object.prototype.__proto__ === null`）。
+  - **类型**：`typeof null` 返回 `"object"`（历史遗留问题）
 
 ### 019：箭头函数和普通函数有什么区别？✔️
 
