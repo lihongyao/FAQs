@@ -13,7 +13,7 @@ HTTP本质上来说就是一个 **通信规则**，规定了客户端发送给�
 
 1. **安全性**
    - HTTP：明文传输，数据可能被窃取或篡改。
-   - HTTPS：SSL/TLS 加密传输，确保数据安全性和完整性。
+   - HTTPS：SSL/TSL 加密传输，确保数据安全性和完整性。
 2. **默认端口**
    - HTTP：80
    - HTTPS：443
@@ -91,8 +91,11 @@ HTTP 缓存是客户端和服务器之间减少重复请求、提高性能的规
    - 浏览器检查 `Cache-Control`/`Expires`
    - 命中 → 直接读取缓存（**不发请求**）
    - 关键字段：
-     - `Cache-Control: max-age=秒数`（优先级更高）
-     - `Expires: 过期时间`
+     - `Cache-Control`，可选值如下
+       - 缓存控制：**`public`** / **`private`** / **`no-store`** / **`no-cache`**
+       - 时间控制：**`max-age=<seconds>`**
+       - ...
+     - `Expires`， 过期时间（已过时）
 2. **协商缓存**
    - 未命中强缓存时，携带缓存标识请求服务器：
      - `If-Modified-Since`（对比 `Last-Modified`）— 基于资源修改时间
