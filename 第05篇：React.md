@@ -1,3 +1,5 @@
+https://blog.csdn.net/qq_16546829/article/details/137056845
+
 ### 001：React 理念
 
 React 的目标是构建 **快速响应** 的大型 Web 应用程序。制约快速响应的因素主要有两个：
@@ -158,4 +160,29 @@ Vue 的 Composition API **没有强制顶层调用的要求**，因为 Vue 的�
 4. **组件复用**：只读性保证组件在不同父组件下行为一致，增强独立性
 
 若需修改数据，应使用 **state** 或通过父组件更新 props
+
+### 011：useEffect vs. useLayoutEffect ✔️
+
+useEffect 和 useLayoutEffect 都是 **副作用 Hook**，但它们的执行时机和影响点不同。
+
+- useEffect：
+  - 在 **浏览器完成渲染更新并绘制到屏幕之后** 才执行。
+  - 异步执行，不会阻塞浏览器绘制。
+  - 更适合执行一些 不会影响 UI 布局的副作用，例如：
+    - 数据请求
+    - 事件监听/订阅
+    - 日志打印
+    - 定时器
+- useLayoutEffect：
+  - 在 DOM 更新后、浏览器绘制之前 执行。
+  - 同步执行，会阻塞浏览器绘制，直到回调函数执行完毕。
+  - 适合执行 需要立即读取或修改 DOM 并影响布局 的操作，例如：
+    - 读取 DOM 尺寸和位置（getBoundingClientRect）
+    - 强制触发浏览器回流 / 重绘
+    - 同步地修改样式，让用户看不到中间状态的闪烁
+
+直观理解：
+
+- useEffect：渲染 → 绘制 → 执行副作用
+- useLayoutEffect：渲染 → 执行副作用 → 绘制
 
